@@ -1,0 +1,27 @@
+<odoo>
+    <record id="crm_lead_view_form_inherit_sales_manager" model="ir.ui.view">
+        <field name="name">crm.lead.form.inherit.sales.manager</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <field name="user_id" position="attributes">
+                <attribute name="context">{'default_sales_team_id': team_id}</attribute>
+            </field>
+
+            <xpath expr="//field[@name='user_id']" position="after">
+                <field name="gs_activity_status" widget="badge"
+                       decoration-success="gs_activity_status == 'green'"
+                       decoration-warning="gs_activity_status == 'yellow'"
+                       decoration-danger="gs_activity_status == 'red'"
+                       readonly="1"/>
+            </xpath>
+
+            <xpath expr="//div[@class='oe_button_box']" position="inside">
+                <button name="check_lead_activity" type="object"
+                        string="Verificar Actividad"
+                        class="oe_stat_button"
+                        icon="fa-refresh"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>
