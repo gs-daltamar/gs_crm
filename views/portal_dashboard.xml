@@ -162,7 +162,7 @@
                         <div id="documentos" class="gs-card" style="margin-top:18px;">
                             <div class="gs-head">
                                 <h3 class="gs-title">Documentos</h3>
-                                <span class="gs-muted">Sube PDF, imágenes u otros archivos</span>
+                                <span class="gs-muted">Sube PDF, imágenes u otros archivo</span>
                             </div>
 
                             <form action="/client_portal/upload_document" method="post" enctype="multipart/form-data"

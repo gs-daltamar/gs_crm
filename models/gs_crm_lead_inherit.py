@@ -46,15 +46,15 @@ class GsCrmLeadInherit(models.Model):
                 continue
 
             # Cálculo en minutos para pruebas
-            inactive_minutes = (fields.Datetime.now() - lead.gs_last_activity_time).total_seconds() / 60
+            inactive_minutes = (fields.Datetime.now() - lead.gs_last_activity_time).total_seconds() / 3600
 
             # Umbrales en minutos para pruebas rápidas
-            if inactive_minutes > 5:  # Más de 5 minutos -> Negro
+            if inactive_minutes > 12:  # Más de 5 minutos -> Negro
                 lead.gs_activity_status = 'black'
                 lead._notify_sanction()
-            elif inactive_minutes > 3:  # Entre 3-5 minutos -> Rojo
+            elif inactive_minutes > 4:  # Entre 3-5 minutos -> Rojo
                 lead.gs_activity_status = 'red'
-            elif inactive_minutes > 1:  # Entre 1-3 minutos -> Amarillo
+            elif inactive_minutes > 2:  # Entre 1-3 minutos -> Amarillo
                 lead.gs_activity_status = 'yellow'
             else:  # Menos de 1 minuto -> Verde
                 lead.gs_activity_status = 'green'
@@ -76,15 +76,14 @@ class GsCrmLeadInherit(models.Model):
                 'name': 'Monitoreo de actividad de leads',
                 'model_id': self.env['ir.model'].sudo().search([('model', '=', 'crm.lead')], limit=1).id,
                 'state': 'code',
-                'code': 'env["crm.lead"].check_lead_activity()',  # CORREGIDO: nombre correcto del método
+                'code': 'env["crm.lead"].check_lead_activity()',
             })
 
-            # Luego creamos el cron job que referencia a la acción del servidor
             self.env['ir.cron'].sudo().create({
                 'ir_actions_server_id': server_action.id,
                 'user_id': self.env.ref('base.user_root').id,
-                'interval_number': 1,
-                'interval_type': 'minutes',
+                'interval_number': 2,
+                'interval_type': 'hours',
                 'nextcall': fields.Datetime.now(),
                 'priority': 5,
                 'active': True,

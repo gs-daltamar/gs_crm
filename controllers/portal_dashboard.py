@@ -13,7 +13,7 @@ class GSPortalDashboard(Controller):
         user = request.env.user
         partner = user.partner_id.sudo()
 
-        # Último login con TZ del usuario → string listo para mostrar
+        # Último login con TZ
         last_login_str = None
         if user.login_date:
             dt_tz = FDatetime.context_timestamp(user, user.login_date)
@@ -29,7 +29,7 @@ class GSPortalDashboard(Controller):
         return request.render('gs_crm.portal_dashboard', {
             'partner': partner,
             'attachments': attachments,
-            'last_login_str': last_login_str,  # 👈 pásalo a la vista
+            'last_login_str': last_login_str,
 
         })
 
