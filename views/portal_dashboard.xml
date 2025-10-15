@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <template id="portal_dashboard" name="GS Client Portal">
+            <t t-call="website.layout">
+                <t t-set="title">Mi Portal</t>
+
+                <style nonce="odoo">
+                    :root{
+                    --gs-primary:#0f2b46; --gs-accent:#00c2ff; --gs-muted:#6b7280;
+                    --gs-bg:#f7f9fc; --gs-card:#fff; --gs-radius:14px;
+                    --gs-shadow:0 12px 30px rgba(0,0,0,.08);
+                    }
+                    body{background:var(--gs-bg);}
+                    .gs-wrap{max-width:1200px;margin:24px auto;padding:0 16px;display:grid;grid-template-columns:280px
+                    1fr;gap:22px;}
+                    @media (max-width:992px){.gs-wrap{grid-template-columns:1fr;}}
+                    .gs-sidebar{background:var(--gs-card);border-radius:var(--gs-radius);box-shadow:var(--gs-shadow);padding:18px;}
+                    .gs-avatar{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:16px;}
+                    .gs-avatar img{width:96px;height:96px;border-radius:999px;object-fit:cover;box-shadow:0 6px 16px
+                    rgba(0,0,0,.15);}
+                    .gs-name{font-weight:800;font-size:18px;color:#111827;text-align:center;}
+                    .gs-last{color:var(--gs-muted);font-size:12px;text-align:center;}
+                    .gs-menu{display:grid;gap:8px;margin-top:12px;}
+                    .gs-menu a{display:flex;align-items:center;gap:10px;padding:10px
+                    12px;border-radius:10px;color:#111827;text-decoration:none;background:#f3f4f6;}
+                    .gs-menu a.active{background:linear-gradient(135deg,#e0f7ff,#f1fbff);border:1px solid #d9f5ff;}
+                    .gs-card{background:var(--gs-card);border-radius:var(--gs-radius);box-shadow:var(--gs-shadow);padding:20px;}
+                    .gs-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+                    .gs-title{font-size:20px;font-weight:800;color:#0b1f36;margin:0;}
+                    .gs-muted{color:var(--gs-muted);font-size:13px;}
+                    .gs-grid{display:grid;gap:16px;}
+                    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr));}
+                    @media (max-width:768px){.grid-2{grid-template-columns:1fr;}}
+                    .gs-input{width:100%;height:44px;border:1px solid #d1d5db;border-radius:10px;padding:10px
+                    12px;background:#fff;}
+                    .gs-label{font-size:12px;font-weight:700;color:#374151;margin-bottom:6px;display:block;}
+                    .gs-btn{height:44px;border:none;border-radius:12px;font-weight:800;padding:0
+                    18px;background:linear-gradient(135deg,var(--gs-accent),#6be3ff);color:#00131f;}
+                    .gs-table{width:100%;border-collapse:separate;border-spacing:0 10px;}
+                    .gs-row{background:#f9fafb;border-radius:12px;}
+                    .gs-row td{padding:12px 14px;}
+                    .gs-actions form{display:inline;}
+                    .gs-photo input[type="file"]{display:block;margin-top:8px;}
+                </style>
+
+                <div class="gs-wrap">
+                    <!-- Sidebar -->
+                    <aside class="gs-sidebar">
+                        <div class="gs-avatar">
+                            <img t-att-src="'/web/image/res.partner/%s/image_128' % partner.id" alt="avatar"/>
+                            <div class="gs-name" t-esc="partner.name"/>
+                            <div class="gs-last">
+                                Última sesión:
+                                <t t-esc="last_login_str or '—'"/>
+                            </div>
+
+                        </div>
+
+                        <!-- Actualizar foto -->
+                        <div class="gs-card gs-photo" style="box-shadow:none;padding:0;">
+                            <form action="/client_portal/upload_photo" method="post" enctype="multipart/form-data"
+                                  style="padding:0 0 6px 0;">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <label class="gs-label">Actualizar foto</label>
+                                <input class="form-control" type="file" name="photo" accept="image/*"/>
+                                <div style="margin-top:10px;">
+                                    <button class="gs-btn" type="submit">Guardar foto</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <nav class="gs-menu" style="margin-top:16px;">
+                            <a href="#perfil" class="active">
+                                <i class="fa fa-user"></i>
+                                <span>Editar información</span>
+                            </a>
+                            <a href="#documentos">
+                                <i class="fa fa-file"></i>
+                                <span>Documentos</span>
+                            </a>
+                        </nav>
+                    </aside>
+
+                    <!-- Contenido -->
+                    <main class="gs-content">
+                        <!-- PERFIL -->
+                        <div id="perfil" class="gs-card">
+                            <div class="gs-head">
+                                <h3 class="gs-title">Información básica</h3>
+                                <span class="gs-muted">Estos datos corresponden a tu ficha de contacto</span>
+                            </div>
+
+                            <form action="/client_portal/save_profile" method="post">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="gs-grid grid-2">
+                                    <div>
+                                        <label class="gs-label">Nombre</label>
+                                        <input class="gs-input" type="text" name="name" t-att-value="partner.name"
+                                               required="required"/>
+                                    </div>
+                                    <div>
+                                        <label class="gs-label">Email</label>
+                                        <input class="gs-input" type="email" name="email" t-att-value="partner.email"/>
+                                    </div>
+                                    <div>
+                                        <label class="gs-label">Teléfono</label>
+                                        <input class="gs-input" type="text" name="phone" t-att-value="partner.phone"/>
+                                    </div>
+                                    <div>
+                                        <label class="gs-label">Celular</label>
+                                        <input class="gs-input" type="text" name="mobile" t-att-value="partner.mobile"/>
+                                    </div>
+                                    <div>
+                                        <label class="gs-label">Dirección</label>
+                                        <input class="gs-input" type="text" name="street" t-att-value="partner.street"/>
+                                    </div>
+                                    <div>
+                                        <label class="gs-label">Ciudad</label>
+                                        <input class="gs-input" type="text" name="city" t-att-value="partner.city"/>
+                                    </div>
+                                    <div>
+                                        <label class="gs-label">Código Postal</label>
+                                        <input class="gs-input" type="text" name="zip" t-att-value="partner.zip"/>
+                                    </div>
+                                    <div>
+                                        <label class="gs-label">País</label>
+                                        <select class="gs-input" name="country_id">
+                                            <option value="">— Selecciona —</option>
+                                            <t t-foreach="request.env['res.country'].sudo().search([])" t-as="c">
+                                                <option t-att-value="c.id"
+                                                        t-att-selected="partner.country_id.id == c.id">
+                                                    <t t-esc="c.name"/>
+                                                </option>
+                                            </t>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="gs-label">Estado/Provincia</label>
+                                        <select class="gs-input" name="state_id">
+                                            <option value="">— Selecciona —</option>
+                                            <t t-if="partner.country_id">
+                                                <t t-foreach="request.env['res.country.state'].sudo().search([('country_id','=',partner.country_id.id)])"
+                                                   t-as="s">
+                                                    <option t-att-value="s.id"
+                                                            t-att-selected="partner.state_id.id == s.id">
+                                                        <t t-esc="s.name"/>
+                                                    </option>
+                                                </t>
+                                            </t>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top:14px;display:flex;gap:10px;justify-content:flex-end;">
+                                    <button class="gs-btn" type="submit">Guardar cambios</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- DOCUMENTOS -->
+                        <div id="documentos" class="gs-card" style="margin-top:18px;">
+                            <div class="gs-head">
+                                <h3 class="gs-title">Documentos</h3>
+                                <span class="gs-muted">Sube PDF, imágenes u otros archivos</span>
+                            </div>
+
+                            <form action="/client_portal/upload_document" method="post" enctype="multipart/form-data"
+                                  style="margin-bottom:14px;">
+                                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                                <div class="gs-grid">
+                                    <input class="form-control" type="file" name="file" required="required"/>
+                                    <div style="display:flex;justify-content:flex-end;">
+                                        <button class="gs-btn" type="submit">Subir</button>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <table class="gs-table">
+                                <tbody>
+                                    <t t-foreach="attachments" t-as="att">
+                                        <tr class="gs-row">
+                                            <td style="width:40px;">
+                                                <i class="fa fa-paperclip"></i>
+                                            </td>
+                                            <td>
+                                                <a t-att-href="'/web/content/%s?download=true' % att.id">
+                                                    <t t-esc="att.name"/>
+                                                </a>
+                                                <div class="gs-muted">
+                                                    <t t-esc="att.mimetype or ''"/>
+                                                </div>
+                                            </td>
+                                            <td class="gs-actions" style="text-align:right;">
+                                                <form t-att-action="'/client_portal/delete_attachment/%s' % att.id"
+                                                      method="post" style="display:inline;">
+                                                    <input type="hidden" name="csrf_token"
+                                                           t-att-value="request.csrf_token()"/>
+                                                    <button class="btn btn-sm btn-outline-danger" type="submit">
+                                                        Eliminar
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <t t-if="not attachments">
+                                        <tr class="gs-row">
+                                            <td colspan="3" class="gs-muted">Sin documentos aún.</td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </main>
+                </div>
+
+                <!-- FontAwesome solo si no lo tienes ya en assets -->
+                <link rel="stylesheet"
+                      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+            </t>
+        </template>
+    </data>
+</odoo>

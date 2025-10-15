@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <!-- Login inspirado en globalsnopek.es -->
+  <template id="gs_login_template" name="GS Portal Login">
+    <t t-call="website.layout">
+
+      <!-- ====================== STYLES ====================== -->
+      <t t-set="title">Iniciar sesión</t>
+      <style nonce="odoo">
+        :root{
+          /* Ajusta la paleta aquí para matchear el sitio */
+          --gs-primary: #0f2b46;   /* primario oscuro (hero) */
+          --gs-accent:  #00c2ff;   /* acento/cta */
+          --gs-muted:   #6b7280;   /* texto secundario */
+          --gs-bg:      #0b1f36;   /* fondo gradiente base */
+          --gs-card:    rgba(255,255,255,.92);
+          --gs-radius:  14px;
+          --gs-shadow:  0 18px 45px rgba(0,0,0,.22), 0 6px 16px rgba(0,0,0,.12);
+        }
+
+        html, body{height:100%;}
+        .gs-hero{
+          min-height: 100vh;
+          display: grid;
+          grid-template-rows: auto 1fr auto;
+          background:
+            radial-gradient(1200px 400px at 50% -5%, rgba(255,255,255,.06), transparent 60%),
+            linear-gradient(180deg, var(--gs-bg) 0%, #071729 100%);
+          color: #fff;
+        }
+        .gs-hero-inner{
+          display:grid;
+          grid-template-columns: 1.1fr .9fr;
+          gap: 40px;
+          align-items: center;
+          max-width: 1120px;
+          margin: 0 auto;
+          padding: 56px 16px;
+          width:100%;
+        }
+        @media (max-width: 992px){
+          .gs-hero-inner{ grid-template-columns: 1fr; gap:28px; padding: 36px 16px 48px; }
+        }
+
+        /* Columna izquierda (texto + espacio de logo) */
+        .gs-left .gs-logo-wrap{
+          display:flex; align-items:center; gap:14px; margin-bottom:18px;
+        }
+        .gs-logo{
+          height:56px; width:auto; background:#fff; border-radius:10px;
+          padding:8px 12px; box-shadow:0 8px 20px rgba(0,0,0,.18);
+        }
+        .gs-eyebrow{
+          text-transform:uppercase; letter-spacing:.16em; font-weight:700;
+          font-size: 12px; color: rgba(255,255,255,.75);
+        }
+        .gs-title{
+          margin: 8px 0 10px;
+          font-weight: 800; line-height: 1.1;
+          font-size: clamp(28px, 4.2vw, 56px);
+        }
+        .gs-sub{
+          max-width: 640px; color: rgba(255,255,255,.85);
+          font-size: clamp(14px, 1.6vw, 18px);
+        }
+
+        /* Card de login (derecha) */
+        .gs-card{
+          background: var(--gs-card);
+          backdrop-filter: saturate(120%) blur(6px);
+          border-radius: var(--gs-radius);
+          box-shadow: var(--gs-shadow);
+          padding: 26px 24px;
+        }
+        .gs-card h5{
+          color: #0b1f36; font-weight:800; margin:0 0 8px;
+        }
+        .gs-muted{ color: var(--gs-muted); font-size: 13px; }
+
+        .gs-field{ margin-bottom: 14px; }
+        .gs-label{ display:block; font-weight:700; font-size:13px; color:#1f2937; margin-bottom:6px; }
+        .gs-input{
+          width:100%; height:44px; border:1px solid #d1d5db; border-radius:10px;
+          padding:10px 12px; outline:none; background:#fff;
+          transition: box-shadow .15s ease, border-color .15s ease, transform .02s ease;
+        }
+        .gs-input:focus{ border-color:#1ea9d9; box-shadow: 0 0 0 4px rgba(0,194,255,.18); }
+
+        .gs-btn{
+          width:100%; height:46px; border:none; border-radius: 12px;
+          font-weight:800; letter-spacing:.3px; cursor:pointer;
+          background: linear-gradient(135deg, var(--gs-accent), #6be3ff);
+          color:#00131f; transition: transform .04s ease, filter .15s ease;
+        }
+        .gs-btn:hover{ filter: brightness(1.02); }
+        .gs-btn:active{ transform: translateY(1px); }
+
+        .gs-error{
+          background:#fdeceb; color:#991b1b; border:1px solid #f9caca;
+          border-radius: 10px; padding:10px 12px; font-size:13px; margin-bottom:10px;
+        }
+
+        /* Footer compacto opcional */
+        .gs-footer{
+          padding: 18px 16px; color: rgba(255,255,255,.75);
+          text-align:center; font-size:13px;
+        }
+
+        /* Micro detalles */
+        .gs-badge{
+          display:inline-flex; align-items:center; gap:8px;
+          background: rgba(255,255,255,.08);
+          border:1px solid rgba(255,255,255,.16);
+          color:#fff; padding:6px 10px; border-radius:999px; font-size:12px;
+        }
+      </style>
+
+      <!-- ====================== HERO ====================== -->
+      <section class="gs-hero">
+        <div class="gs-hero-inner">
+
+          <!-- Columna: mensaje y logo -->
+          <div class="gs-left">
+            <!-- ESPACIO PARA LOGO -->
+            <div class="gs-logo-wrap">
+              <img class="gs-logo"
+                   t-att-src="'/gs_crm/static/src/img/logo-global-snopek-1.png'"
+                   alt="Logo"/>
+              <span class="gs-badge">Portal Clientes · Acceso</span>
+            </div>
+
+            <div class="gs-eyebrow"></div>
+            <h1 class="gs-title">Bienvenido a tu Portal</h1>
+<!--            <p class="gs-sub">-->
+<!--              Accede a tu cuenta para gestionar servicios, facturas y proyectos.-->
+<!--              Interfaz moderna, clara y segura—alineada con la estética del sitio corporativo.-->
+<!--            </p>-->
+          </div>
+
+          <!-- Columna: card de login -->
+          <div>
+            <div class="gs-card">
+              <h5>Iniciar sesión</h5>
+              <p class="gs-muted" style="margin-bottom:14px;">Ingresa tus credenciales para continuar</p>
+
+              <form t-attf-action="/portal_login{{ redirect and ('?redirect=' + redirect) or '' }}"
+                    method="post" novalidate="novalidate">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+
+                <div class="gs-field">
+                  <label class="gs-label" for="login">Correo o Usuario</label>
+                  <input class="gs-input" type="text" id="login" name="login"
+                         placeholder="tu@correo.com" required="required"/>
+                </div>
+
+                <div class="gs-field">
+                  <label class="gs-label" for="password">Contraseña</label>
+                  <input class="gs-input" type="password" id="password" name="password"
+                         placeholder="********" required="required"/>
+                </div>
+
+                <t t-if="error">
+                  <div class="gs-error">
+                    <t t-esc="error"/>
+                  </div>
+                </t>
+
+                <button class="gs-btn" type="submit">Entrar</button>
+
+                <div class="d-flex justify-content-between align-items-center" style="margin-top:10px;">
+                  <a class="gs-muted" href="/web/reset_password">¿Olvidaste tu contraseña?</a>
+                  <span class="gs-muted">© </span>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer pequeño dentro del hero -->
+        <div class="gs-footer">
+          <span></span>
+        </div>
+      </section>
+    </t>
+  </template>
+</odoo>

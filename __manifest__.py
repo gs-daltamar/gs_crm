@@ -27,6 +27,8 @@ Long description of module's purpose
         "data/automations.xml",
         'views/res_users_view.xml',
         'views/crm_lead_view.xml',
+        'views/login_portal.xml',
+        'views/portal_dashboard.xml',
     ],
 
     "installable": True,
