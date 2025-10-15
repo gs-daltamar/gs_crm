@@ -13,14 +13,11 @@ class GSPortalDashboard(Controller):
         user = request.env.user
         partner = user.partner_id.sudo()
 
-        # Último login con TZ
         last_login_str = None
         if user.login_date:
             dt_tz = FDatetime.context_timestamp(user, user.login_date)
             last_login_str = dt_tz.strftime('%d-%m-%Y %H:%M')
 
-
-        # Adjuntos del partner (solo últimos 10 para mostrar)
         attachments = request.env['ir.attachment'].sudo().search([
             ('res_model', '=', 'res.partner'),
             ('res_id', '=', partner.id),
@@ -37,7 +34,6 @@ class GSPortalDashboard(Controller):
     def client_portal_save_profile(self, **post):
         partner = request.env.user.partner_id.sudo()
         vals = {}
-        # mapea inputs permitidos -> campos res.partner
         field_map = {
             'name': 'name',
             'email': 'email',
@@ -63,10 +59,8 @@ class GSPortalDashboard(Controller):
         partner = request.env.user.partner_id.sudo()
         photo = post.get('photo')
         if photo and hasattr(photo, 'filename'):
-            # patrón de subida a image_1920 como ya hiciste en otros portales
-            # (leer, validar tipo, base64 y write al partner) :contentReference[oaicite:2]{index=2}
             if photo.content_type not in ('image/jpeg', 'image/png', 'image/gif'):
-                return request.redirect('/client_portal')  # podrías mostrar un toast
+                return request.redirect('/client_portal')
             data64 = base64.b64encode(photo.read())
             partner.write({'image_1920': data64})
         return request.redirect('/client_portal')
@@ -84,14 +78,12 @@ class GSPortalDashboard(Controller):
                 'res_model': 'res.partner',
                 'res_id': partner.id,
             })
-            # si más adelante quieres crear documents.document, es el mismo patrón que ya usas. :contentReference[oaicite:3]{index=3}
         return request.redirect('/client_portal')
 
     @route('/client_portal/delete_attachment/<int:att_id>', auth='user', website=True, csrf=True, methods=['POST'])
     def client_portal_delete_attachment(self, att_id, **kw):
         att = request.env['ir.attachment'].sudo().browse(att_id)
         partner = request.env.user.partner_id.sudo()
-        # seguridad básica: solo borrar si pertenece a este partner
         if att and att.res_model == 'res.partner' and att.res_id == partner.id:
             att.unlink()
         return request.redirect('/client_portal')
