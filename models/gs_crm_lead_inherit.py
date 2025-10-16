@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import api, fields, models, _
 from datetime import timedelta
+from odoo.exceptions import ValidationError
 
 
 class GsCrmLeadInherit(models.Model):
@@ -88,3 +89,23 @@ class GsCrmLeadInherit(models.Model):
                 'priority': 5,
                 'active': True,
             })
+
+    @api.constrains('phone')
+    def check_unique_phone(self):
+        for record in self:
+            if not record.phone:
+                continue
+
+            #limpiar telefono y quitar espacios
+            cleaned_phone = record.phone.replace(' ', '').strip()
+
+            #buscamos otros leads con el mismo telefono
+            existing = self.search([
+                ('id', '!=', record.id),
+                ('phone', '=', cleaned_phone)
+            ])
+            for lead in existing:
+                if lead.phone:
+                    raise ValidationError("El número de teléfono debe ser único")
+
+

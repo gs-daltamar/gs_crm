@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
   <!-- Login inspirado en globalsnopek.es -->
   <template id="gs_login_template" name="GS Portal Login">
