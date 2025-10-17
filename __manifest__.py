@@ -29,6 +29,8 @@ Long description of module's purpose
         'views/crm_lead_view.xml',
         'views/login_portal.xml',
         'views/portal_dashboard.xml',
+        'data/ir_cron.xml',
+        'data/mail_template.xml',
     ],
 
     "installable": True,

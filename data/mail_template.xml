@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data noupdate="1">
+    <record id="mail_template_activity_reminder_24h" model="mail.template">
+      <field name="name">Recordatorio 24h Actividad</field>
+      <field name="model_id" ref="mail.model_mail_activity"/>
+      <field name="subject">[Recordatorio] Actividad para mañana: ${object.summary or '(Sin resumen)'}</field>
+      <field name="email_from">${(user.company_id.email or user.email) or 'no-reply@example.com'}</field>
+      <field name="email_to">${object.user_id.partner_id.email}</field>
+      <field name="auto_delete" eval="True"/>
+      <field name="body_html">
+        <![CDATA[
+        <p>Hola ${object.user_id.name},</p>
+        <p>Este es un recordatorio de que tienes una actividad programada para <b>${format_date(object.date_deadline)}</b>.</p>
+        <ul>
+          <li><b>Resumen:</b> ${object.summary or '(Sin resumen)'}</li>
+          <li><b>Modelo:</b> ${object.res_model or 'N/A'}</li>
+          <li><b>Fecha límite:</b> ${format_date(object.date_deadline)}</li>
+        </ul>
+        % if object.res_model and object.res_id:
+          <p>Puedes abrir el registro desde Odoo para gestionar la actividad.</p>
+        % endif
+        <p>— Sistema de notificaciones 24h</p>
+        ]]>
+      </field>
+    </record>
+  </data>
+</odoo>

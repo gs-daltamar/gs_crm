@@ -14,6 +14,14 @@ class GsCrmLeadInherit(models.Model):
         ('red', 'Rojo'),
         ('black', 'Negro')
     ], string="Estado de actividad")
+    gs_presupuesto = fields.Float(string="Presupuesto")
+
+    binding_type = fields.Selection([('micro', 'Microempresa(de 1 a 10 empleados)'),
+        ('pequeña', 'Pequeña empresa(de 11 a 50 empleados)'),
+        ('mediana', 'Mediana empresa(de 51 a 250 empleados)'),
+        ('gran', 'Gran empresa(más de 200 empleados)')])
+    gs_autoridad = fields.Boolean()
+    gs_fecha_creacion = fields.Datetime(string= "Fecha de creacion", default=fields.Datetime.now, readonly = True)
 
     def write(self, vals):
         if any(field in vals for field in ['description', 'stage_id', 'user_id']):
@@ -96,7 +104,7 @@ class GsCrmLeadInherit(models.Model):
             if not record.phone:
                 continue
 
-            #limpiar telefono y quitar espacios
+            #limpiar telefono y quitar
             cleaned_phone = record.phone.replace(' ', '').strip()
 
             #buscamos otros leads con el mismo telefono

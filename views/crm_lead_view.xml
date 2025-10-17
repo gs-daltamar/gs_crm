@@ -22,6 +22,17 @@
                         class="oe_stat_button"
                         icon="fa-refresh"/>
             </xpath>
+            <xpath expr="//field[@name='tag_ids']" position="after">
+                <field name="gs_presupuesto"/>
+            </xpath>
+            <xpath expr="//page[@name='lead']//field[@name='partner_name']" position="after">
+                <field name="binding_type" string="Tamaño de la empresa"/>
+            </xpath>
+            <xpath expr="//field[@name='gs_presupuesto']" position="before">
+                <field name="gs_autoridad" widget="boolean_toggle" string="¿Toma de decisiones?"/>
+                <field name="gs_fecha_creacion"/>
+            </xpath>
+
         </field>
     </record>
 </odoo>
