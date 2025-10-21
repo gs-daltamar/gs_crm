@@ -31,6 +31,7 @@ Long description of module's purpose
         'views/portal_dashboard.xml',
         'data/ir_cron.xml',
         'data/mail_template.xml',
+        'views/res_partner_inherit.xml',
     ],
 
     "installable": True,

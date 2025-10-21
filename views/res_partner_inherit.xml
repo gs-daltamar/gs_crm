@@ -1,0 +1,38 @@
+<odoo>
+    <record id="res_partner_view_form_inherit_gs" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//sheet" position="before">
+                <div>
+                    <field name="gs_estado_cliente" widget="statusbar" clickable="True" options="{'clickable': True}"/>
+                </div>
+            </xpath>
+
+            <xpath expr="//notebook[last()]" position="inside">
+                <page string="Información complementaria" name="information">
+                    <group>
+                        <group string="Información complementaria">
+                            <field name="binding_type" string="Tamaño de la empresa"/>
+                            <field name="gs_presupuesto"/>
+                            <field name="gs_estado_cliente"/>
+                            <field name="gs_fecha_actualizacion_documentos"/>
+                        </group>
+                        <group>
+                            <field name="gs_no_proyecto"/>
+                            <field name="gs_estado_proyecto"/>
+                            <field name="gs_proxima_actividad"/>
+                            <field name="gs_proxima_fecha"/>
+                            <field name="gs_facturacion"/>
+                            <field name="gs_pagos"/>
+                        </group>
+                        <label for="gs_productos_comprados" string="Productos comprados"/>
+                        <field name="gs_productos_comprados" nolabel="1" colspan="4"/>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

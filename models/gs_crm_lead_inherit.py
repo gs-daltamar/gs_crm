@@ -22,6 +22,13 @@ class GsCrmLeadInherit(models.Model):
         ('gran', 'Gran empresa(más de 200 empleados)')])
     gs_autoridad = fields.Boolean()
     gs_fecha_creacion = fields.Datetime(string= "Fecha de creacion", default=fields.Datetime.now, readonly = True)
+    gs_proxima_actividad = fields.Selection([
+        ('reunion', 'Reunion'),
+        ('llamada', 'Llamada'),
+        ('correo', 'Correo'),
+        ('whatsapp', 'Mensaje WhatsApp'),
+    ], string="Proxima actividad")
+    gs_proxima_fecha = fields.Datetime(string="Fecha de la proxima actividad")
 
     def write(self, vals):
         if any(field in vals for field in ['description', 'stage_id', 'user_id']):

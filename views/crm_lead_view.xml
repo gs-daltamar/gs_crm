@@ -32,7 +32,14 @@
                 <field name="gs_autoridad" widget="boolean_toggle" string="¿Toma de decisiones?"/>
                 <field name="gs_fecha_creacion"/>
             </xpath>
-
+            <xpath expr="//field[@name='user_id']" position="before">
+                <field name="gs_proxima_actividad" string="Proxima actividad"/>
+            </xpath>
+            <xpath expr="//field[@name='phone']" position="after">
+                <group>
+                    <field name="gs_proxima_fecha" string="Proxima actividad"/>
+                </group>
+            </xpath>
         </field>
     </record>
 </odoo>
