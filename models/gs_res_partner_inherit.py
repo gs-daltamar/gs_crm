@@ -9,7 +9,7 @@ class GsResPartnerInherit(models.Model):
     binding_type = fields.Selection([('micro', 'Microempresa(de 1 a 10 empleados)'),
         ('pequeña', 'Pequeña empresa(de 11 a 50 empleados)'),
         ('mediana', 'Mediana empresa(de 51 a 250 empleados)'),
-        ('gran', 'Gran empresa(más de 200 empleados)')])
+        ('gran', 'Gran empresa(más de 200 empleados)')],string="Tamaño de la empresa")
 
     gs_presupuesto = fields.Float(string="Presupuesto")
     gs_estado_cliente = fields.Selection([
