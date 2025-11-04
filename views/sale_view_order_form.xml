@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Herencia del formulario de pedido de venta -->
+        <record id="sale_order_form_inherit_gs" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit.gs</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='payment_term_id']" position="after">
+                    <field name="category_ids" widget="many2many_tags"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_order_form_inherit_dias_habiles_list" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit.dias_habiles.list</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='order_lines']//field[@name='order_line']//list/field[@name='customer_lead']"
+                       position="after">
+                    <field name="dias_habiles" string="Días hábiles" optional="show" width="90px"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_order_form_inherit_dias_habiles_form" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit.dias_habiles.form</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//page[@name='order_lines']//field[@name='order_line']//form//div[@name='lead']"
+                       position="after">
+                    <div>
+                        <label for="dias_habiles"/>
+                        <field name="dias_habiles"/>
+                    </div>
+                </xpath>
+            </field>
+        </record>
+
+    </data>
+</odoo>

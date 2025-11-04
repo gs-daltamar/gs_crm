@@ -18,11 +18,11 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','crm','mail','website'],
+    'depends': ['base','crm','mail','website','sale'],
 
     # always loaded
     'data': [
-        # 'security/ir.model.access.csv',
+        'security/ir.model.access.csv',
         "data/mail_templates.xml",
         "data/automations.xml",
         'views/res_users_view.xml',
@@ -32,6 +32,7 @@ Long description of module's purpose
         'data/ir_cron.xml',
         'data/mail_template.xml',
         'views/res_partner_inherit.xml',
+        'views/sale_view_order_form.xml',
     ],
 
     "installable": True,
