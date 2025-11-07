@@ -1,0 +1,177 @@
+<!-- views/portal_contract_templates.xml -->
+<odoo>
+    <!-- 2.1 Encabezado dinámico (empresa/cliente) -->
+    <template id="gs_crm.gs_contract_header" name="gs_contract_header">
+        <t t-set="c" t-value="order.company_id"/>
+        <t t-set="cp" t-value="order.company_id.partner_id"/>
+        <t t-set="p" t-value="order.partner_invoice_id or order.partner_id"/>
+
+        <div style="width:100%; text-align:justify; font-size:12pt; line-height:1.5;">
+            Entre<t t-esc="c.name"/>, con CIF/NIF<t t-esc="c.vat or ''"/>, y domicilio en
+            <span>
+                <t t-esc="', '.join([x for x in [
+            cp.street or '', (cp.city or ''), (cp.zip or ''), (cp.country_id and cp.country_id.name or '')
+        ] if x])"/>
+            </span>
+            ,
+            (en adelante, "<t t-esc="c.name"/>"
+            o la "Empresa"), representada por Facundo Mele Snopek NIE: Y7983022N, en su calidad
+            de representante legal, y el cliente
+            <t t-esc="p.display_name"/>
+            con NIF
+            <t t-esc="p.vat or ''"/>
+            y domicilio en
+            <t t-esc="', '.join([x for x in [
+            p.street or '', (p.city or ''), (p.zip or ''), (p.country_id and p.country_id.name or '')
+        ] if x])"/>,
+            (en adelante, el "Cliente"). La persona firmante se compromete a la veracidad de los datos,
+            garantizando tener el cargo o autoridad suficiente para obrar en nombre de la empresa que dice
+            representar. En caso de no ser veraz, responderá con su patrimonio personal, asumiendo la total
+            responsabilidad del encargo. Se acuerda el presente contrato de prestación de servicios
+            (en adelante, el "Contrato") con las siguientes condiciones:
+        </div>
+        <br/>
+        <div style="width:100%; text-align:justify; font-size:12pt; line-height:1.5;">
+            Objeto del Contrato:
+        </div>
+        <br/>
+        <div style="width:100%; text-align:justify; font-size:12pt; line-height:1.5;">
+            <t t-esc="c.name"/>
+            se compromete a entregar al Cliente el siguiente servicio:
+        </div>
+    </template>
+
+
+    <!-- 2.3 Inyección antes de los totales en la vista de portal -->
+    <template id="gs_portal_quote_contract_inherit" inherit_id="sale.sale_order_portal_content">
+        <xpath expr="//section[@id='details']" position="before">
+            <section id="contract_conditions" class="mt-4">
+                <hr class="mt-0 mb-1"/>
+                <t t-set="names" t-value="set(sale_order.category_ids.mapped('name'))"/>
+                <t t-call="gs_crm.gs_contract_header">
+                    <t t-set="order" t-value="sale_order"/>
+                </t>
+            </section>
+        </xpath>
+    </template>
+
+    <template id="gs_portal_quote_contract_two_inherit" inherit_id="sale.sale_order_portal_content">
+        <xpath expr="//section[@id='details']" position="after">
+            <section id="contract_conditions_two" class="mt-4">
+                <hr class="mt-0 mb-1"/>
+
+                <!-- ==== variables auxiliares ==== -->
+                <t t-set="names" t-value="set(sale_order.category_ids.mapped('name'))"/>
+                <t t-set="has_web_or_dossier"
+                   t-value="'Dossier inmobiliario' in names or 'Diseño Web Sector inmobiliario' in names"/>
+                <t t-set="total" t-value="sale_order.amount_total or 0.0"/>
+                <t t-set="half" t-value="(sale_order.amount_total or 0.0) / 2.0"/>
+
+                <!-- ==== cláusula con valores dinámicos ==== -->
+                <p style="text-align:justify; font-size:12pt; line-height:1.5;">
+                    El valor del proyecto es de
+                    <span>
+                        <t t-out="total"
+                           t-options='{"widget": "monetary", "display_currency": sale_order.currency_id}'/>
+                    </span>
+                    (Base Imponible + IVA).
+                    El cliente deberá abonar el 50%
+                    <span>
+                        (
+                        <t t-out="total"
+                           t-options='{"widget": "monetary", "display_currency": sale_order.currency_id}'/>
+                        dividido 2 =
+                        <t t-out="half" t-options='{"widget": "monetary", "display_currency": sale_order.currency_id}'/>
+                        )
+                    </span>
+                    del trabajo por adelantado y el 50%
+                    <span>
+                        (
+                        <t t-out="total"
+                           t-options='{"widget": "monetary", "display_currency": sale_order.currency_id}'/>
+                        dividido 2 =
+                        <t t-out="half" t-options='{"widget": "monetary", "display_currency": sale_order.currency_id}'/>
+                        )
+                    </span>
+                    restante al visualizar mediante una grabación de pantalla con marca de agua sólida sin
+                    transparencia que cubre gran parte del contenido; la finalidad de esta marca es evitar la
+                    remoción de marcas de agua con IA.
+                    Al no entregar material renderizado
+                    <t t-if="has_web_or_dossier">
+                        ,
+                        <span>dossier o diseño web
+                        </span>
+                    </t>
+                    con posibilidad de uso sin recibir el pago, debe abonarse el 50% restante para recibir el
+                    material en alta calidad y comenzar con las rondas de correcciones garantizadas por contrato.
+                    Por favor, no insista en recibir material con marca de agua transparente, intentar iniciar una
+                    ronda de correcciones con la grabación o proceder de otra manera que no sea la estipulada en
+                    esta cláusula.
+                </p>
+
+                <!-- Cláusula de Entrega de Información -->
+                <p style="text-align:justify; font-size:12pt; line-height:1.5;">
+                    Cláusula de Entrega de Información:
+                    <br/>
+                    <br/>
+                    El Cliente se compromete a completar en su totalidad el formulario interactivo recibido como parte
+                    del proceso de inicio del proyecto.
+                    <br/>
+                    <br/>
+                    Como alternativa, el Cliente podrá enviar el contenido de las respuestas del formulario por correo
+                    electrónico a
+                    <t t-if="sale_order.company_id.email">
+                        <a t-attf-href="mailto:{{ sale_order.company_id.email }}" style="color:#007bff;">
+                            <t t-esc="sale_order.company_id.email"/>
+                        </a>
+                    </t>
+                    indicando en el asunto el número de presupuesto.
+                    <br/>
+                    <br/>
+                    Toda información, material, referencia, indicación o cambio de criterio aportado con posterioridad a
+                    la entrega del formulario completo podrá:
+                    <br/>
+                    <br/>
+                    Ser considerado un adicional presupuestable, o Consumir una de las rondas de corrección gratuitas
+                    previstas en la cláusula de Correcciones.
+                    <br/>
+                    <br/>
+                    <span>
+                        <t t-esc="sale_order.company_id.name"/>
+                    </span>
+                    no será responsable de disconformidades en el resultado final que deriven de falta, omisión,
+                    ambigüedad o insuficiencia en la información inicial,
+                    ni de cambios de criterio posteriores a su entrega.
+                    <br/>
+                    <br/>
+                    El Cliente declara comprender que la calidad y los plazos del proyecto dependen en gran medida de la
+                    exhaustividad y precisión de la información entregada al inicio.
+                    <br/>
+                    <br/>
+                    El plazo de producción comenzará a computarse a partir del siguiente día hábil de recibido el
+                    formulario completo y correctamente rellenado.
+                </p>
+
+            </section>
+
+            <section id="contract_body_categories" class="mt-4">
+                <t t-set="cats" t-value="sale_order.category_ids.sorted(key=lambda c: c.name.lower())"/>
+
+                <!-- Si hay categorías, pintamos sus minutas -->
+                <t t-if="cats">
+                    <t t-foreach="cats" t-as="cat">
+                        <t t-if="cat.description">
+                            <!-- Título opcional por categoría -->
+<!--                            <h4 t-esc="cat.name" class="mt-3 mb-2"/>-->
+                            <!-- Minuta HTML escrita en la categoría -->
+                            <div style="text-align:justify; font-size:12pt; line-height:1.5;">
+                                <t t-raw="cat.description"/>
+                            </div>
+<!--                            <hr class="my-3"/>-->
+                        </t>
+                    </t>
+                </t>
+            </section>
+        </xpath>
+    </template>
+</odoo>

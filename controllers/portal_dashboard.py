@@ -3,8 +3,14 @@ from odoo.http import request, route, Controller
 from odoo.exceptions import AccessDenied
 import base64
 from odoo.fields import Datetime as FDatetime
+import json
+from odoo import http
+from werkzeug.wrappers import Response
+
+
 
 import mimetypes
+
 
 class GSPortalDashboard(Controller):
 
@@ -87,3 +93,43 @@ class GSPortalDashboard(Controller):
         if att and att.res_model == 'res.partner' and att.res_id == partner.id:
             att.unlink()
         return request.redirect('/client_portal')
+
+    @http.route('/gs_crm/update_contract_categories', type='json', auth='user', methods=['POST'])
+    def update_contract_categories(self, **post):
+        # --- Robustez: parseo manual del body JSON, aunque sea type="json"
+        data = {}
+        try:
+            # Primero intenta json.loads sobre el raw body
+            raw = request.httprequest.get_data(cache=False, as_text=True)  # str
+            if raw:
+                data = json.loads(raw)
+        except Exception:
+            # Fallbacks opcionales (por si tu server cambia comportamiento)
+            data = getattr(request, 'jsonrequest', {}) or {}
+
+        so_id = data.get('so_id')
+        items = data.get('items', [])
+
+        # Validación básica
+        if not so_id or not isinstance(items, list):
+            return {'error': 'Missing data'}
+
+        # Solo usuarios internos
+        if not request.env.user.has_group('base.group_user'):
+            return {'error': 'forbidden'}
+
+        so = request.env['sale.order'].sudo().browse(int(so_id))
+        if not so.exists():
+            return {'error': 'SO not found'}
+
+        allowed = set(so.category_ids.ids)
+
+        for it in items:
+            cid = int(it.get('id'))
+            if cid not in allowed:
+                continue
+            request.env['sale.order.category'].sudo().browse(cid).write({
+                'description': it.get('description', ''),
+            })
+
+        return {'status': 'ok'}

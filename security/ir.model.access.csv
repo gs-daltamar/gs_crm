@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
 access_sale_order_category,sale.order.category,model_sale_order_category,,1,1,1,1

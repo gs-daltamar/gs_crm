@@ -18,7 +18,7 @@ Long description of module's purpose
     'version': '0.1',
 
     # any module necessary for this one to work correctly
-    'depends': ['base','crm','mail','website','sale'],
+    'depends': ['base','crm','mail','website','sale','sale_management','portal'],
 
     # always loaded
     'data': [
@@ -33,6 +33,8 @@ Long description of module's purpose
         'data/mail_template.xml',
         'views/res_partner_inherit.xml',
         'views/sale_view_order_form.xml',
+        'views/portal_contract_template.xml',
+        'views/sale_order_category_views.xml',
     ],
 
     "installable": True,

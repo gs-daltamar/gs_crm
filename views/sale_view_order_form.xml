@@ -41,5 +41,134 @@
             </field>
         </record>
 
+
+        <template id="gs_portal_add_edit_contract_button"
+                  inherit_id="sale.sale_order_portal_template"
+                  name="Botón Modificar contrato debajo de View Details">
+
+            <!-- Insertamos debajo del bloque de botones (donde está View Details) -->
+            <xpath expr="//div[@id='sale_order_sidebar_button']/div[contains(@class,'o_download_pdf')]"
+                   position="after">
+                <t t-if="sale_order.category_ids and request.env.user.has_group('base.group_user')">
+                    <div class="d-flex flex-column gap-2 mt-2">
+                        <button class="btn btn-secondary flex-grow-1"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modal_edit_contract_portal">
+                            <i class="fa fa-edit me-1"/>
+                            Modificar contrato
+                        </button>
+                    </div>
+                </t>
+            </xpath>
+
+            <!-- Modal con edición inline -->
+            <xpath expr="//div[hasclass('o_portal_sale_sidebar')]" position="after">
+                <t t-if="sale_order.category_ids and request.env.user.has_group('base.group_user')">
+                    <input type="hidden" id="gs_csrf" t-att-value="request.csrf_token()"/>
+                    <input type="hidden" id="gs_so_id" t-att-value="sale_order.id"/>
+
+
+                    <div class="modal fade" id="modal_edit_contract_portal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Editar minuta del contrato</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"/>
+                                </div>
+
+                                <div class="modal-body">
+                                    <t t-foreach="sale_order.category_ids" t-as="cat">
+                                        <div class="mb-4 border-bottom pb-3">
+                                            <h5>
+                                                <t t-esc="cat.name"/>
+                                            </h5>
+                                            <textarea t-attf-id="textarea_cat_{{cat.id}}" class="form-control"
+                                                      rows="8">
+                                                <t t-esc="cat.description or ''"/>
+                                            </textarea>
+                                        </div>
+                                    </t>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar
+                                    </button>
+                                    <button type="button" class="btn btn-primary" id="saveContractChanges">Guardar
+                                        cambios
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Script para guardar los cambios -->
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                        const saveBtn = document.getElementById('saveContractChanges');
+                        if (!saveBtn) return;
+
+                        const csrf = document.getElementById('gs_csrf')?.value || '';
+
+                        saveBtn.addEventListener('click', async () => {
+                        const items = [];
+                        document.querySelectorAll('[id^="textarea_cat_"]').forEach(el => {
+                        const id = parseInt(el.id.replace('textarea_cat_', ''));
+                        items.push({ id, description: el.value });
+                        });
+                        const payload = {
+                        so_id: parseInt(document.getElementById('gs_so_id').value),
+                        items: items,
+                        };
+
+                        try {
+                        const resp = await fetch('/gs_crm/update_contract_categories', {
+                        method: 'POST',
+                        headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrf,
+                        'Accept': 'application/json',
+                        },
+                        body: JSON.stringify(payload),
+                        });
+                        const data = await resp.json();
+                        const result = data.result || data; // soporta ambos casos
+
+                        if (!resp.ok) {
+                        alert('Error de red o respuesta HTTP no OK.');
+                        return;
+                        }
+                        if (result.status !== 'ok') {
+                        alert(result.error || 'Error al guardar. Revisa permisos32s.');
+                        return;
+                        }
+                        window.location.reload();
+
+                        } catch (e) {
+                        alert('Error de conexión');
+                        }
+                        });
+                        });
+                    </script>
+
+
+                </t>
+            </xpath>
+
+        </template>
+
+
+        <template id="gs_portal_quote_contract_inherit" inherit_id="sale.sale_order_portal_content">
+            <xpath expr="//section[@id='details']" position="before">
+                <section id="contract_conditions" class="mt-4">
+                    <hr class="mt-0 mb-1"/>
+                    <t t-set="names" t-value="set(sale_order.category_ids.mapped('name'))"/>
+                    <t t-call="gs_crm.gs_contract_header">
+                        <t t-set="order" t-value="sale_order"/>
+                    </t>
+                </section>
+            </xpath>
+        </template>
+
+
     </data>
 </odoo>
